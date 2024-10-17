@@ -45,7 +45,12 @@ router.post("/login", async (req, res) => {
 router.get("/getAllAdmin", async (req, res) => {
   try {
     const getAllAdminLists = await Admin.find();
-    res.status(200).json(getAllAdminLists);
+    res
+      .status(200)
+      .json(
+        { message: "Data has been successfully fetched!" },
+        getAllAdminLists
+      );
   } catch (error) {
     res
       .status(500)
