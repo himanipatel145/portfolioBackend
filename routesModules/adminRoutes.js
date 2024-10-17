@@ -6,37 +6,52 @@ const bcrypt = require("bcryptjs");
 
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(422).json({ error: "Fill the fields properly" });
+  }
 
   try {
-    const adminLogin = await Admin.findOne({ email: email });
-
-    if (!adminLogin) {
-      return res.status(422).json({ error: "Admin not found!" });
-    }
-
-    console.log("Stored Password Hash:", adminLogin.password);
-
-    const isPasswordMatch = await adminLogin.comparePassword(password);
-    console.log("Password Match:", isPasswordMatch);
-
-    if (!isPasswordMatch) {
-      return res.status(422).json({ error: "Invalid email or password!" });
-    }
-
-    return res.status(200).json({
-      message: "Admin Login Successful!",
-      user: {
-        email: adminLogin.email,
-      },
+    const adminLogin = await Admin.findOne({
+      email: email,
     });
+
+    if (adminLogin) {
+      const isMatch = await bcrypt.compare(password, adminLogin.password);
+      if (!isMatch) {
+        return res.status(400).json({ error: "Invalid email or password" });
+      }
+
+      let response = {
+        _id: adminLogin._id,
+        email: adminLogin.email,
+        phone: adminLogin.phone,
+        firstName: adminLogin.firstName,
+        lastName: adminLogin.lastName,
+        fullName: adminLogin.fullName,
+      };
+
+      res.status(201).json({
+        message: "Logged in successfully.",
+        response: { ...response },
+      });
+    } else {
+      return res.status(400).json({ error: "Invalid email or password" });
+    }
   } catch (error) {
     console.log(error);
-    return res
-      .status(500)
-      .json({ message: "Error while logging in!", error: error.message });
   }
 });
 
+router.get("/getAllAdmin", async (req, res) => {
+  try {
+    const getAllAdminLists = await Admin.find();
+    res.status(200).json(getAllAdminLists);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching contacts data", error: error });
+  }
+});
 router.get("/getAllDetails", async (req, res) => {
   try {
     const getAllDetails = await Contact.find();

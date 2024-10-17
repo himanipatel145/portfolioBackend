@@ -2,8 +2,19 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 
-const AdminSchema = mongoose.Schema(
+const adminSchema = new mongoose.Schema(
   {
+    firstName: {
+      type: String,
+      required: true,
+    },
+    lastName: {
+      type: String,
+      required: true,
+    },
+    fullName: {
+      type: String,
+    },
     email: {
       type: String,
       required: true,
@@ -14,7 +25,11 @@ const AdminSchema = mongoose.Schema(
         }
       },
     },
-
+    phone: {
+      type: Number,
+      required: true,
+      min: 10,
+    },
     password: {
       type: String,
       required: true,
@@ -29,36 +44,35 @@ const AdminSchema = mongoose.Schema(
   { timestamps: true, versionKey: false }
 );
 
-// Hash password before saving the admin
-AdminSchema.pre("save", async function (next) {
+//hashing password
+adminSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 12);
   }
+  this.fullName = this.firstName + " " + this.lastName;
   next();
 });
 
-// Method to compare password
-AdminSchema.methods.comparePassword = async function (password) {
-  return bcrypt.compare(password, this.password);
-};
+const Admin = mongoose.model("admin", adminSchema);
 
-const Admin = mongoose.model("himaniPortfolioAdmin", AdminSchema);
-
-// Function to create an admin if not exists
 const createAdmin = async () => {
   const admin = await Admin.findOne(
-    { email: "himanipatel14597@gmail.com" },
+    {
+      email: process.env.ADMIN_EMAIL,
+    },
     { email: 1, _id: 0 }
   );
-  console.log(admin);
 
   if (!admin) {
     const newAdmin = new Admin({
-      email: "himanipatel14597@gmail.com",
-      password: "himanipatel145", // This will be hashed automatically
+      email: process.env.ADMIN_EMAIL,
+      phone: process.env.ADMIN_PHONE,
+      firstName: process.env.ADMIN_FIRSTNAME,
+      lastName: process.env.ADMIN_LASTNAME,
+      password: process.env.ADMIN_PASSWORD,
     });
     await newAdmin.save();
-    console.log("Admin created successfully");
+    console.log("Admin created successfully", newAdmin);
   }
 };
 
