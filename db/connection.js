@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Admin = require("../model/adminUserSchema");
 
 mongoose
   .connect(process.env.URI)
