@@ -14,7 +14,6 @@ router.post("/login", async (req, res) => {
       return res.status(422).json({ error: "Admin not found!" });
     }
 
-    // Log the stored password hash for debugging
     console.log("Stored Password Hash:", adminLogin.password);
 
     const isPasswordMatch = await adminLogin.comparePassword(password);
