@@ -47,20 +47,10 @@ router.get("/getAllAdmin", async (req, res) => {
     const getAllAdminLists = await Admin.find();
     res
       .status(200)
-      .json(
-        { message: "Data has been successfully fetched!" },
-        getAllAdminLists
-      );
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error fetching contacts data", error: error });
-  }
-});
-router.get("/getAllDetails", async (req, res) => {
-  try {
-    const getAllDetails = await Contact.find();
-    res.status(200).json(getAllDetails);
+      .json({
+        message: "All Admins have been successfully fetched!",
+        data: getAllAdminLists,
+      });
   } catch (error) {
     res
       .status(500)
@@ -68,11 +58,26 @@ router.get("/getAllDetails", async (req, res) => {
   }
 });
 
+router.get("/getAllDetails", async (req, res) => {
+  try {
+    const getAllDetails = await Contact.find();
+    res.status(200).json({
+      message: "Data has been successfully fetched!",
+      data: getAllDetails,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching contacts data",
+      error: error,
+    });
+  }
+});
+
 router.delete("/deleteAllDetails", async (req, res) => {
   try {
     const deleteAllDetails = await Contact.deleteMany({});
     if (deleteAllDetails.deletedCount > 0) {
-      res.status(200).json({ message: "All data deleted successfully" });
+      res.status(200).json({ message: "All data deleted successfully!" });
     } else {
       res.status(404).json({ message: "No data found to delete" });
     }
