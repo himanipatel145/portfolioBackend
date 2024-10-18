@@ -66,9 +66,7 @@ router.get("/getAllDetails", async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Error fetching contacts data",
-      error: {
-        message: error.message,
-      },
+      error: error,
     });
   }
 });
