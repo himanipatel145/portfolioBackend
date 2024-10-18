@@ -45,12 +45,10 @@ router.post("/login", async (req, res) => {
 router.get("/getAllAdmin", async (req, res) => {
   try {
     const getAllAdminLists = await Admin.find();
-    res
-      .status(200)
-      .json({
-        message: "All Admins have been successfully fetched!",
-        data: getAllAdminLists,
-      });
+    res.status(200).json({
+      message: "All Admins have been successfully fetched!",
+      data: getAllAdminLists,
+    });
   } catch (error) {
     res
       .status(500)
@@ -68,7 +66,7 @@ router.get("/getAllDetails", async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Error fetching contacts data",
-      error: error,
+      error: "Error fetching contacts data>>>",
     });
   }
 });
