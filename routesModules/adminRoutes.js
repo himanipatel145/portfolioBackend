@@ -61,6 +61,7 @@ router.get("/getAllDetails", async (req, res) => {
     const getAllDetails = await Contact.find();
     res.status(200).json({
       message: "Data has been successfully fetched!",
+      length: getAllDetails.length,
       data: getAllDetails,
     });
   } catch (error) {
@@ -71,6 +72,20 @@ router.get("/getAllDetails", async (req, res) => {
   }
 });
 
+router.delete("/deleteContact/:_id", async (req, res) => {
+  try {
+    const removeContact = await Contact.deleteOne({ _id: req.params._id });
+    if (removeContact) {
+      res.status(200).json({ message: "Contact deleted successfully!" });
+    } else {
+      res.status(404).json({ message: "No data found to delete" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error while deleting contact!!", error: error });
+  }
+});
 router.delete("/deleteAllDetails", async (req, res) => {
   try {
     const deleteAllDetails = await Contact.deleteMany({});
