@@ -17,8 +17,9 @@ router.post("/login", async (req, res) => {
 
     if (adminLogin) {
       const isMatch = await bcrypt.compare(password, adminLogin.password);
+
       if (!isMatch) {
-        return res.status(400).json({ error: "Invalid email or password" });
+        return res.status(400).json({ error: "Invalid email or password!!" });
       }
 
       let response = {
@@ -35,7 +36,7 @@ router.post("/login", async (req, res) => {
         response: { ...response },
       });
     } else {
-      return res.status(400).json({ error: "Invalid email or password" });
+      return res.status(400).json({ error: "Invalid email or password!!" });
     }
   } catch (error) {
     console.log(error);
@@ -77,6 +78,39 @@ router.delete("/deleteContact/:_id", async (req, res) => {
     const removeContact = await Contact.deleteOne({ _id: req.params._id });
     if (removeContact) {
       res.status(200).json({ message: "Contact deleted successfully!" });
+    } else {
+      res.status(404).json({ message: "No data found to delete" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error while deleting contact!!", error: error });
+  }
+});
+
+router.patch("/editContact/:_id", async (req, res) => {
+  const { name, email, opportunity, companyName, message, contactNumber } =
+    req.body;
+  const { _id } = req.params;
+  try {
+    const editContact = await Contact.findOneAndUpdate(
+      { _id: _id },
+      {
+        $set: {
+          name: name,
+          email: email,
+          opportunity: opportunity,
+          companyName: companyName,
+          message: message,
+          contactNumber: contactNumber,
+        },
+      },
+      { new: true }
+    );
+    if (editContact) {
+      res
+        .status(200)
+        .json({ user: editContact, message: "Contact updated successfully!" });
     } else {
       res.status(404).json({ message: "No data found to delete" });
     }
